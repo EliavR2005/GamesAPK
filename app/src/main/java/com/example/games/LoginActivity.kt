@@ -3,8 +3,11 @@ package com.example.games
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.setContent
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -16,18 +19,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 
-class LoginActivity : ComponentActivity() {
+class LoginActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val userManager = UserManager(this)
+
         setContent {
             DarkNeonTheme {
                 LoginScreen(
+                    userManager = userManager,
                     onLoginSuccess = {
-                        // acción dentro del composable, se ejecuta usando LocalContext
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
                     },
                     onRegisterClick = {
-                        // acción dentro del composable, se ejecuta usando LocalContext
+                        startActivity(Intent(this, RegisterActivity::class.java))
                     }
                 )
             }
@@ -37,12 +46,47 @@ class LoginActivity : ComponentActivity() {
 
 @Composable
 fun LoginScreen(
+    userManager: UserManager,
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
-    val context = LocalContext.current // ✅ aquí sí se puede usar
-    var username by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf("") }
+
+    // Configuración biométrica
+    val biometricManager = BiometricManager.from(context)
+    val canAuth = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+
+    val executor = ContextCompat.getMainExecutor(context)
+    val biometricPrompt = BiometricPrompt(
+        context as FragmentActivity,
+        executor,
+        object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                Toast.makeText(context, "Acceso con huella exitoso", Toast.LENGTH_SHORT).show()
+                onLoginSuccess()
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                Toast.makeText(context, "Error: $errString", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                Toast.makeText(context, "Huella no reconocida", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
+
+    val promptInfo = PromptInfo.Builder()
+        .setTitle("Acceso con huella")
+        .setSubtitle("Usa tu huella para iniciar sesión")
+        .setNegativeButtonText("Cancelar")
+        .build()
 
     Box(
         modifier = Modifier
@@ -64,9 +108,9 @@ fun LoginScreen(
             )
 
             OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Usuario") },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Correo") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = neonTextFieldColors()
             )
@@ -80,30 +124,36 @@ fun LoginScreen(
                 colors = neonTextFieldColors()
             )
 
+            if (error.isNotEmpty()) {
+                Text(error, color = MaterialTheme.colorScheme.error)
+            }
+
+            // Botón login normal
             Button(
                 onClick = {
-                    if (username == "EliabR2005" && password == "panchopantera") {
-                        // abrimos MainActivity desde aquí
-                        context.startActivity(Intent(context, MainActivity::class.java))
-                        (context as? ComponentActivity)?.finish()
+                    if (userManager.login(email, password)) {
+                        onLoginSuccess()
                     } else {
-                        Toast.makeText(context, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                        error = "Usuario o contraseña incorrectos"
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00FFFF),
-                    contentColor = Color.Black
-                )
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Ingresar")
             }
 
-            TextButton(
-                onClick = {
-                    context.startActivity(Intent(context, RegisterActivity::class.java))
+            // Botón login con huella
+            if (canAuth == BiometricManager.BIOMETRIC_SUCCESS) {
+                Button(
+                    onClick = { biometricPrompt.authenticate(promptInfo) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00CED1))
+                ) {
+                    Text("Ingresar con huella", color = Color.Black)
                 }
-            ) {
+            }
+
+            TextButton(onClick = onRegisterClick) {
                 Text("¿No tienes cuenta? Regístrate", color = Color(0xFF00CED1))
             }
         }

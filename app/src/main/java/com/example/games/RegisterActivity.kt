@@ -1,126 +1,101 @@
 package com.example.games
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.games.DarkNeonTheme
+import com.example.games.neonTextFieldColors
+
 
 class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val userManager = UserManager(this)
+
         setContent {
             DarkNeonTheme {
-                RegisterScreen()
+                RegisterScreen(userManager = userManager) { finish() }
             }
         }
     }
 }
 
 @Composable
-fun RegisterScreen() {
-    var username by remember { mutableStateOf("") }
+fun RegisterScreen(
+    userManager: UserManager,
+    onRegisterSuccess: () -> Unit
+) {
+    val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirm by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf("") }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(Color.Black, Color(0xFF001F1F))
-                )
-            ),
-        contentAlignment = Alignment.Center
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Column(
-            modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Text("Registro de usuario", style = MaterialTheme.typography.headlineSmall)
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Correo") },
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        )
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        )
+
+        OutlinedTextField(
+            value = confirm,
+            onValueChange = { confirm = it },
+            label = { Text("Confirmar contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        )
+
+        if (error.isNotEmpty()) {
+            Text(error, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(8.dp))
+        }
+
+        Button(
+            onClick = {
+                when {
+                    password != confirm -> error = "Las contraseñas no coinciden"
+                    email.isEmpty() || password.isEmpty() -> error = "Llena todos los campos"
+                    userManager.register(email, password) -> {
+                        Toast.makeText(context, "Usuario registrado ✅", Toast.LENGTH_SHORT).show()
+                        onRegisterSuccess()
+                    }
+                    else -> error = "El usuario ya existe"
+                }
+            },
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         ) {
-            Text(
-                "Registro",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color(0xFF00FFFF)
-            )
-
-            // Campo usuario
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Usuario") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = neonTextFieldColors()
-            )
-
-            // Campo email
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Correo electrónico") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = neonTextFieldColors()
-            )
-
-            // Campo contraseña
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                colors = neonTextFieldColors()
-            )
-
-            // Botón de registro
-            Button(
-                onClick = { /* lógica de registro */ },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00FFFF),
-                    contentColor = Color.Black
-                )
-            ) {
-                Text("Registrarse")
-            }
-
-            TextButton(onClick = { /* volver a login */ }) {
-                Text("¿Ya tienes cuenta? Inicia sesión", color = Color(0xFF00CED1))
-            }
+            Text("Registrar")
         }
     }
 }
-
-@Composable
-fun DarkNeonTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = darkColorScheme(
-            primary = Color(0xFF00FFFF), // aqua neon
-            background = Color.Black,
-            surface = Color(0xFF001F1F),
-            onPrimary = Color.Black,
-            onBackground = Color(0xFF00FFFF),
-            onSurface = Color(0xFF00FFFF)
-        ),
-        content = content
-    )
-}
-
-@Composable
-fun neonTextFieldColors() = TextFieldDefaults.colors(
-    focusedIndicatorColor = Color(0xFF00FFFF),
-    unfocusedIndicatorColor = Color(0xFF00CED1),
-    focusedLabelColor = Color(0xFF00FFFF),
-    unfocusedLabelColor = Color(0xFF00CED1),
-    cursorColor = Color(0xFF00FFFF)
-)

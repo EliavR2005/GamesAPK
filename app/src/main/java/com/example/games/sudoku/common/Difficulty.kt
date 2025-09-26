@@ -1,9 +1,7 @@
 package com.example.games.sudoku.common
 
-enum class Difficulty {
-    Fast,
-    Easy,
-    Normal,
-    Hard,
-    Evil
+enum class Difficulty(val missingDigits: Int) {
+    EASY(30),
+    MEDIUM(40),
+    HARD(50)
 }

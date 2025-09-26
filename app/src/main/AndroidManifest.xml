@@ -55,5 +55,27 @@
             android:label="Tic Tac Toe"
             android:theme="@style/Theme.Games" />
 
+        <!-- Sudoku -->
+        <activity
+            android:name=".sudoku.SudokuActivity"
+            android:exported="false"
+            android:label="Sudoku"
+            android:theme="@style/Theme.Games" />
+
+        <!-- Memorama -->
+        <activity
+            android:name=".memorama.MemoramaActivity"
+            android:exported="false"
+            android:label="Memorama"
+            android:theme="@style/Theme.Games" />
+
+        <!-- Cartas -->
+        <activity
+            android:name=".CardsActivity"
+            android:exported="true"
+            android:label="Cartas"
+            android:theme="@style/Theme.Games" />
+
+
     </application>
 </manifest>
