@@ -1,6 +1,6 @@
 # NeoGames
 
-NeoGames es una aplicación móvil desarrollada en **Android Studio** con **Kotlin** y **Jetpack Compose**, diseñada para ofrecer entretenimiento seguro y atractivo mediante una estética oscura y moderna. Incluye tres juegos clásicos integrados en una interfaz intuitiva y fácil de usar.
+NeoGames es una aplicación móvil desarrollada en **Android Studio** con **Kotlin** y **Jetpack Compose**, diseñada para ofrecer entretenimiento seguro y atractivo mediante una estética oscura y moderna. Incluye múltiples juegos integrados en una interfaz intuitiva y fácil de usar.
 
 ---
 
@@ -30,6 +30,7 @@ Desarrollar una aplicación móvil que:
   - **Memorama:** juego de memoria con tablero dinámico, cartas con efecto visual glow, contador de movimientos y notificación de victoria.
   - **Sudoku:** tablero dinámico 9×9 con selección de dificultad, pad numérico, controles de deshacer/rehacer y opción para resolver automáticamente.
   - **TicTacToe:** versión estilizada del clásico juego de “Gato”, con diseño moderno, marcador dinámico, mensajes emergentes y opciones de reinicio.
+  - **Trivia:** juego interactivo con 10 preguntas de programación, interfaz neon dinámica y sistema de retroalimentación instantánea.
 
 ---
 
@@ -40,7 +41,7 @@ El proyecto está dividido en módulos:
 - **RegisterActivity:** registro con validación de datos.
 - **MainActivity:** menú principal para elegir categorías.
 - **PuzzleActivity:** pantalla principal para acceder a los juegos.
-- **MemoramaActivity, SudokuActivity, TicTacToeActivity:** implementaciones individuales de cada juego.
+- **MemoramaActivity, SudokuActivity, TicTacToeActivity, TriviaActivity:** implementaciones individuales de cada juego.
 
 ---
 
@@ -63,17 +64,39 @@ NeoGames puede evolucionar hacia:
 
 ---
 
+## Actualizaciones Recientes
+
+- **Nuevo módulo Trivia:** integración de un juego de preguntas de programación con interfaz neon dinámica.
+- Unificación del estilo visual de todos los juegos con bordes y animaciones neon.
+- Mejoras en la navegación interna y estructura modular.
+- Optimización de la interfaz para una experiencia fluida.
+
+---
+
 ## Reseñas de Usuarios
 
 - Brayan: “Los juegos están bien producidos, se siente muy profesional.”
 - María G.: “Me encantó el diseño, es diferente a lo que normalmente se ve en apps.”
 - Johan H.: “El registro fue fácil y rápido, sin complicaciones.”
-- Ana P.: “La interfaz es sencilla pero futurista, intuitiva.”
+- Ana P.: “La interfaz es sencilla pero futurista”
 - Omar T.: “La implementación de la huella es excelente.”
 
 ---
 
 ## Conclusión
 
-NeoGames es una aplicación que combina entretenimiento, seguridad y diseño moderno, ofreciendo una experiencia atractiva con tres juegos clásicos listos para disfrutar. El proyecto está preparado para crecer hacia una plataforma robusta y versátil.
+NeoGames es una aplicación que combina entretenimiento, seguridad y diseño moderno, ofreciendo una experiencia atractiva con varios juegos clásicos listos para disfrutar.
 
+---
+
+## Repositorio
+
+El código fuente completo de NeoGames está disponible en [GitHub](#).
+
+---
+
+
+## Licencia
+
+Este proyecto está bajo la **Licencia MIT**.  
+Consulta el archivo [LICENSE](LICENSE) para más detalles.

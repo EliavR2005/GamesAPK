@@ -76,6 +76,13 @@
             android:label="Cartas"
             android:theme="@style/Theme.Games" />
 
+        <!-- Trivia -->
+        <activity
+            android:name=".trivia.TriviaActivity"
+            android:exported="true"
+            android:label="Trivia"
+            android:theme="@style/Theme.Games" />
 
     </application>
+
 </manifest>
